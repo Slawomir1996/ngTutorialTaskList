@@ -1,14 +1,14 @@
 import { UserDtO } from "./UserDtO";
 
 export type Task = {
-  id?: number;
-  slug?: string;
-  title?: string;
-  body?: string;
+  id: number;
+  slug: string;
+  title: string;
+  body: string;
   createdAt?: Date;
   startAt?: string;
   author?: UserDtO;
-  isDone?: boolean;
+  isDone: boolean;
   };
   export class Meta {
     totalItems?: number;
