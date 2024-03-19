@@ -4,6 +4,7 @@ import { TasksListComponent } from './tasks-list.component';
 import { SubmitTextComponent } from './submit-text.component';
 import { TaskListPageComponent } from './task-list.page.component';
 
+
 @Component({
   selector: 'app-root',
   standalone: true,

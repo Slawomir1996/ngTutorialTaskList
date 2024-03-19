@@ -5,9 +5,9 @@ export type Task = {
   slug: string;
   title: string;
   body: string;
-  createdAt?: Date;
-  startAt?: string;
-  author?: UserDtO;
+  createdAt: Date;
+  startAt: string;
+  author: UserDtO;
   isDone: boolean;
   };
   export class Meta {
@@ -26,7 +26,7 @@ export class Links {
 }
 
 export class TaskPageable {
-    items?: Task[];
+    items!: Task[];
     meta?: Meta;
     links?: Links;
 }

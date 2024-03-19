@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { TasksListComponent } from "./tasks-list.component";
 import { SubmitTextComponent } from "./submit-text.component";
-import { Task } from "./Task";
+import { Task, TaskPageable } from "./Task";
 import { NgIf } from "@angular/common";
 
 type ListFetchingError = { status: number; message: string };
@@ -17,7 +17,7 @@ type LoadingState = {
 // success
 type SuccessState = {
   state: "success";
-  results: Task[];
+  results: TaskPageable['items'];
 };
 // error
 type ErrorState = {
@@ -37,9 +37,10 @@ type ComponentListState = IdleState | LoadingState | SuccessState | ErrorState;
       *ngIf="listState.state === 'success'"
       class="block mt-4"
       [tasks]="listState.results"
-    />
+    ></app-tasks-list>
     <p *ngIf="listState.state === 'error'">{{ listState.error.message }}</p>
     <p *ngIf="listState.state === 'loading'">Loading...</p>
+    <p>{{listState.state}}</p>
   `,
 })
 export class TaskListPageComponent {
@@ -48,21 +49,25 @@ export class TaskListPageComponent {
   private readonly URL = "http://localhost:3000/api";
 
   constructor() {
+    this.fetchData();
+  }
+
+  private fetchData() {
     this.listState = { state: "loading" };
-    fetch(`${this.URL}/list-entries`)
-      .then<Task[] | ListFetchingError>((response) => {
+    fetch(`${this.URL}/list-entries/user/1/title`)
+      .then<TaskPageable | ListFetchingError>((response) => {
         if (response.ok) {
           return response.json();
         }
-
         return { status: response.status, message: response.statusText };
       })
       .then((response) => {
         setTimeout(() => {
-          if (Array.isArray(response)) {
+          if ('items' in response) {
+            console.log(response.items);
             this.listState = {
               state: "success",
-              results: response,
+              results: response.items,
             };
           } else {
             this.listState = {

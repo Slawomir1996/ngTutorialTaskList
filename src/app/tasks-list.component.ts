@@ -1,8 +1,8 @@
-import { Component, Input, inject } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { Task } from "./Task";
-import { NgFor, NgIf } from "@angular/common";
+import { NgFor, NgForOf, NgIf } from "@angular/common";
 import { NgIconComponent, provideIcons } from "@ng-icons/core";
-// import { featherCalendar } from "@ng-icons/feather-icons";
+import { featherCalendar } from "@ng-icons/feather-icons";
 
 import { TasksService } from "./tasks.service";
 import { RemoveItemButtonComponent } from "./remowe-item-button.component";
@@ -10,14 +10,14 @@ import { AutosizeTextareaComponent } from "./auto-size-text-area.component";
 
 @Component({
   selector: "app-tasks-list",
+  viewProviders: [provideIcons({ featherCalendar })],
   standalone: true,
-  // viewProviders: [provideIcons({ featherCalendar })],
   imports: [
     NgFor,
     NgIconComponent,
     NgIf,
     RemoveItemButtonComponent,
-    AutosizeTextareaComponent
+    AutosizeTextareaComponent,
   ],
   template: `
     <ul>
@@ -29,7 +29,7 @@ import { AutosizeTextareaComponent } from "./auto-size-text-area.component";
             (dblclick)="switchToEditMode()"
           >
             <header class="flex justify-end">
-              <app-remove-item-button (confirm)="delete(task.id)" />
+              <app-remove-item-button (confirm)="delete(task.id)" ></app-remove-item-button>
             </header>
             <section class="text-left">
               <app-autosize-textarea
@@ -37,7 +37,7 @@ import { AutosizeTextareaComponent } from "./auto-size-text-area.component";
                 (keyup.escape)="editMode = false"
                 (submitText)="updateTask(task.id, $event)"
                 [value]="task.body"
-              />
+              ></app-autosize-textarea>
 
               <ng-template #previewModeTemplate>
                 <span [class.line-through]="task.isDone">
@@ -45,8 +45,8 @@ import { AutosizeTextareaComponent } from "./auto-size-text-area.component";
                 </span>
               </ng-template>
             </section>
-            <footer class=" pt-2 flex items-center justify-end">
-              <ng-icon name="featherCalendar" class="text-sm" />
+            <footer class="pt-2 flex items-center justify-end">
+              <ng-icon name="featherCalendar" class="text-sm"></ng-icon>
             </footer>
           </button>
         </div>
@@ -56,14 +56,19 @@ import { AutosizeTextareaComponent } from "./auto-size-text-area.component";
   styles: [],
 })
 export class TasksListComponent {
-  @Input({ required: true }) tasks: Task[] = [];
+  @Input() tasks: Task[] = [];
 
   removeMode = false;
   editMode = false;
-
   isSingleClick = true;
 
-  private tasksService = inject(TasksService);
+  private tasksService: TasksService;
+
+  constructor() {
+    // this.tasksService = inject(TasksService);
+    // Instead of using inject, it's better to use dependency injection in Angular constructor
+    this.tasksService = new TasksService();
+  }
 
   delete(taskId: number) {
     this.tasksService.delete(taskId);
